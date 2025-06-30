@@ -52,6 +52,7 @@ func main() {
 	r := gin.Default()
 	r.Use(middleware.PrometheusMiddleware())
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+	r.GET("/s/:code", transport.ResolveShortURL(db))
 
 	// OAuth2 login
 	r.GET("/auth/google/login", auth.GoogleLogin)
@@ -68,6 +69,8 @@ func main() {
 	{
 		v1 := r.Group("/v1")
 		{
+			v1.POST("", transport.CreateSortenurl(db))
+
 			Products := v1.Group("/product")
 			{
 				Products.POST("", transport.AddProduct(db))
